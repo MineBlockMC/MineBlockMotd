@@ -1,8 +1,11 @@
 package org.mineblock.motd.bungee.variables;
 
+import org.mineblock.motd.bungee.BungeePlugin;
 import org.mineblock.motd.bungee.utils.ConfigurationUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.config.Configuration;
+
+import java.io.File;
 
 public class Messages {
 	private final ConfigurationUtil configurationUtil;
@@ -17,7 +20,7 @@ public class Messages {
 	}
 
 	public void reload() {
-		final Configuration messages = configurationUtil.getConfiguration("%datafolder%/messages.yml");
+		final Configuration messages = configurationUtil.getConfiguration(new File(BungeePlugin.INSTANCE.getDataFolder(),"messages.yml"));
 
 		reload = ChatColor.translateAlternateColorCodes('&', messages.getString("messages.reload"));
 		usage = ChatColor.translateAlternateColorCodes('&', messages.getString("messages.usage"));

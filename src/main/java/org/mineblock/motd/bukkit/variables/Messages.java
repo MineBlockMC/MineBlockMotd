@@ -3,7 +3,10 @@ package org.mineblock.motd.bukkit.variables;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 
+import org.mineblock.motd.bukkit.BukkitPlugin;
 import org.mineblock.motd.bukkit.utils.ConfigurationUtil;
+
+import java.io.File;
 
 public class Messages {
 	private final ConfigurationUtil configurationUtil;
@@ -18,7 +21,7 @@ public class Messages {
 	}
 
 	public void reload() {
-		final Configuration messages = configurationUtil.getConfiguration("%datafolder%/messages.yml");
+		final Configuration messages = configurationUtil.getConfiguration(new File(BukkitPlugin.INSTANCE.getDataFolder(), "messages.yml"));
 
 		reload = ChatColor.translateAlternateColorCodes('&', messages.getString("messages.reload"));
 		usage = ChatColor.translateAlternateColorCodes('&', messages.getString("messages.usage"));

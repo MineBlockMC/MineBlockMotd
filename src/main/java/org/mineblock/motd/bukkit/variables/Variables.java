@@ -1,14 +1,14 @@
 package org.mineblock.motd.bukkit.variables;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.Configuration;
 
+import org.mineblock.motd.bukkit.BukkitPlugin;
 import org.mineblock.motd.bukkit.utils.ConfigurationUtil;
-import org.mineblock.motd.bukkit.utils.Hitokoto;
 
 public class Variables {
 	private static final String DEFAULT_MOTD = "";
@@ -28,7 +28,7 @@ public class Variables {
 	}
 
 	public void reloadConfig() {
-		final Configuration configuration = configurationUtil.getConfiguration("%datafolder%/config.yml");
+		final Configuration configuration = configurationUtil.getConfiguration(new File(BukkitPlugin.INSTANCE.getDataFolder(), "config.yml"));
 
 		motdEnabled = configuration.getBoolean("motd.enabled");
 		motds = configuration.getStringList("motd.motds").toArray(new String[0]);
@@ -67,23 +67,10 @@ public class Variables {
 	}
 
 	public String[] getSample(final int maxPlayers, final int onlinePlayers) {
-		Hitokoto oneword;
-		String hito;
-		String hitofrom;
-		try {
-			oneword = new Hitokoto();
-			hito = oneword.getHitokoto();
-			hitofrom = oneword.getHitokotoFrom();
-		} catch (IOException e) {
-			hito = "当你一直看一言的时候，却忘了你其实是来玩游戏的";
-			hitofrom = "MineBlock团队";
-		}
 		return ChatColor.translateAlternateColorCodes('&',
 				sampleSamples[(int) (Math.floor(Math.random() * sampleSamples.length))]
 						.replace("%maxplayers%", String.valueOf(maxPlayers))
 						.replace("%onlineplayers%", String.valueOf(onlinePlayers))
-						.replace("%hitokoto%",hito)
-						.replace("%hitokotofrom%",hitofrom)
 		)
 				.split("\n");
 	}

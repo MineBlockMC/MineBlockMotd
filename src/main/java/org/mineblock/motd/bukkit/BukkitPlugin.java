@@ -11,14 +11,19 @@ import org.mineblock.motd.bukkit.utils.ConfigurationUtil;
 import org.mineblock.motd.bukkit.variables.Messages;
 import org.mineblock.motd.bukkit.variables.Variables;
 
+import java.io.File;
+
 public class BukkitPlugin extends JavaPlugin {
+	public static BukkitPlugin INSTANCE;
 
 	@Override
 	public void onEnable() {
+		INSTANCE = this;
+
 		final ConfigurationUtil configurationUtil = new ConfigurationUtil(this);
 
-		configurationUtil.createConfiguration("%datafolder%/config.yml");
-		configurationUtil.createConfiguration("%datafolder%/messages.yml");
+		configurationUtil.createConfiguration(new File(getDataFolder(), "config.yml"));
+		configurationUtil.createConfiguration(new File(getDataFolder(), "messages.yml"));
 
 		final Server server = getServer();
 		final Variables variables = new Variables(configurationUtil);

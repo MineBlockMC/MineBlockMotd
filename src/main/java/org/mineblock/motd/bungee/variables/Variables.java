@@ -1,8 +1,10 @@
 package org.mineblock.motd.bungee.variables;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.mineblock.motd.bungee.BungeePlugin;
 import org.mineblock.motd.bungee.utils.ConfigurationUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.config.Configuration;
@@ -25,7 +27,7 @@ public class Variables {
 	}
 
 	public void reloadConfig() {
-		final Configuration configuration = configurationUtil.getConfiguration("%datafolder%/config.yml");
+		final Configuration configuration = configurationUtil.getConfiguration(new File(BungeePlugin.INSTANCE.getDataFolder(), "config.yml"));
 
 		motdEnabled = configuration.getBoolean("motd.enabled");
 		motds = configuration.getStringList("motd.motds").toArray(new String[0]);

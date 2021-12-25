@@ -1,9 +1,6 @@
 package org.mineblock.motd.bukkit.listeners;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -22,7 +19,7 @@ public class ServerInfoListener extends PacketAdapter {
     private final Variables variables;
 
     public ServerInfoListener(final Plugin plugin, final Variables variables) {
-        super(plugin, ListenerPriority.HIGH, Arrays.asList(PacketType.Status.Server.OUT_SERVER_INFO),
+        super(plugin, ListenerPriority.HIGH, Collections.singletonList(PacketType.Status.Server.OUT_SERVER_INFO),
                 ListenerOptions.ASYNC);
         this.variables = variables;
     }
@@ -60,7 +57,7 @@ public class ServerInfoListener extends PacketAdapter {
         if (variables.isSampleEnabled()) {
             final UUID fakeUuid = new UUID(0, 0);
             final String[] sampleString = variables.getSample(ping.getPlayersMaximum(), onlinePlayers);
-            final List<WrappedGameProfile> sample = new ArrayList<WrappedGameProfile>(sampleString.length);
+            final List<WrappedGameProfile> sample = new ArrayList<>(sampleString.length);
 
             for (final String sampleStringEntry : sampleString) {
                 sample.add(new WrappedGameProfile(fakeUuid, sampleStringEntry));
