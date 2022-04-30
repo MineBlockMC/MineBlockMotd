@@ -22,7 +22,7 @@ public class ProxyPingListener implements Listener {
 	public void onProxyPing(final ProxyPingEvent event) {
 		final ServerPing response = event.getResponse();
 
-		if ((response == null) || (event instanceof Cancellable && ((Cancellable) event).isCancelled())) {
+		if (response == null || (event instanceof Cancellable && ((Cancellable) event).isCancelled())) {
 			return;
 		}
 
@@ -63,5 +63,7 @@ public class ProxyPingListener implements Listener {
 
 			players.setSample(sample);
 		}
+
+		event.setResponse(response);
 	}
 }

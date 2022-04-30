@@ -5,42 +5,41 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.mineblock.motd.bungee.BungeePlugin;
-import org.mineblock.motd.bungee.utils.ConfigurationUtil;
+import org.mineblock.motd.bungee.utils.ConfigUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.config.Configuration;
 
 public class Variables {
-	private static final String DEFAULT_MOTD = "CleanMotD default generated MotD\nWhoops... No MotD has been specified!";
+	private static final String DEFAULT_MOTD = "MineBlock Motd\nDefault server Motd.";
 
-	private final ConfigurationUtil configurationUtil;
+	private final ConfigUtil configUtil;
 	private final Collection<String> pinged = new HashSet<>();
 	private String[] motds;
 	private String[] sampleSamples;
 	private int maxPlayers, fakePlayersAmount;
-	private boolean motdEnabled, sampleEnabled, protocolEnabled, maxPlayersJustOneMore, maxPlayersEnabled,
-			fakePlayersEnabled;
+	private boolean motdEnabled, sampleEnabled, protocolEnabled, maxPlayersJustOneMore, maxPlayersEnabled, fakePlayersEnabled;
 	private String protocolName, fakePlayersMode;
 
-	public Variables(ConfigurationUtil configurationUtil) {
-		this.configurationUtil = configurationUtil;
+	public Variables(ConfigUtil configUtil) {
+		this.configUtil = configUtil;
 		reloadConfig();
 	}
 
 	public void reloadConfig() {
-		final Configuration configuration = configurationUtil.getConfiguration(new File(BungeePlugin.INSTANCE.getDataFolder(), "config.yml"));
+		final Configuration config = configUtil.getConfiguration(new File(BungeePlugin.INSTANCE.getDataFolder(), "config.yml"));
 
-		motdEnabled = configuration.getBoolean("motd.enabled");
-		motds = configuration.getStringList("motd.motds").toArray(new String[0]);
-		sampleEnabled = configuration.getBoolean("sample.enabled");
-		sampleSamples = configuration.getStringList("sample.samples").toArray(new String[0]);
-		protocolEnabled = configuration.getBoolean("protocol.enabled");
-		protocolName = configuration.getString("protocol.name");
-		maxPlayersEnabled = configuration.getBoolean("maxplayers.enabled");
-		maxPlayers = configuration.getInt("maxplayers.maxplayers");
-		maxPlayersJustOneMore = configuration.getBoolean("maxplayers.justonemore");
-		fakePlayersEnabled = configuration.getBoolean("fakeplayers.enabled");
-		fakePlayersAmount = configuration.getInt("fakeplayers.amount");
-		fakePlayersMode = configuration.getString("fakeplayers.mode");
+		motdEnabled = config.getBoolean("motd.enabled");
+		motds = config.getStringList("motd.motds").toArray(new String[0]);
+		sampleEnabled = config.getBoolean("sample.enabled");
+		sampleSamples = config.getStringList("sample.samples").toArray(new String[0]);
+		protocolEnabled = config.getBoolean("protocol.enabled");
+		protocolName = config.getString("protocol.name");
+		maxPlayersEnabled = config.getBoolean("maxplayers.enabled");
+		maxPlayers = config.getInt("maxplayers.maxplayers");
+		maxPlayersJustOneMore = config.getBoolean("maxplayers.justonemore");
+		fakePlayersEnabled = config.getBoolean("fakeplayers.enabled");
+		fakePlayersAmount = config.getInt("fakeplayers.amount");
+		fakePlayersMode = config.getString("fakeplayers.mode");
 	}
 
 	public boolean isMotdEnabled() {

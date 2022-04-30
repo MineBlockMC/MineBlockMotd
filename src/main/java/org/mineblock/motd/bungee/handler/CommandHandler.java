@@ -12,8 +12,8 @@ public class CommandHandler extends Command {
 	private final Messages messages;
 	private final BungeePlugin plugin;
 
-	public CommandHandler(final String string, final Variables variables, final Messages messages, BungeePlugin plugin) {
-		super(string);
+	public CommandHandler(final String string, String permission, final Variables variables, final Messages messages, BungeePlugin plugin) {
+		super(string, permission);
 		this.variables = variables;
 		this.messages = messages;
 		this.plugin = plugin;
@@ -23,21 +23,21 @@ public class CommandHandler extends Command {
 		switch (args[0].toLowerCase()){
 			case "help":{
 				if (commandSender.hasPermission("mineblock.command.motd")) {
-					commandSender.sendMessage(new TextComponent(messages.getUsage()));
-				} else commandSender.sendMessage(new TextComponent(messages.getNoPermission()));
+					commandSender.sendMessage(new TextComponent(Messages.USAGE));
+				} else commandSender.sendMessage(new TextComponent(Messages.NOPERMISSION));
 				break;
 			}
 			case "reload":{
 				if (commandSender.hasPermission("mineblock.command.motd")) {
 					variables.reloadConfig();
 					messages.reload();
-					commandSender.sendMessage(new TextComponent(messages.getReload()));
-				} else commandSender.sendMessage(new TextComponent(messages.getNoPermission()));
+					commandSender.sendMessage(new TextComponent(Messages.RELOAD));
+				} else commandSender.sendMessage(new TextComponent(Messages.NOPERMISSION));
 				break;
 			}
 			default:{
 				commandSender.sendMessage(new TextComponent("This server is running "+ plugin.getDescription().getName() +" version "+ plugin.getDescription().getVersion()+" by "+ plugin.getDescription().getAuthor()));
-				commandSender.sendMessage(new TextComponent(messages.getUnknownCommand()));
+				commandSender.sendMessage(new TextComponent(Messages.UNKNOWNCOMMAND));
 				break;
 			}
 		}

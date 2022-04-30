@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-public class ConfigurationUtil {
+public class ConfigUtil {
 	final private Plugin plugin;
 
-	public ConfigurationUtil(final Plugin plugin) {
+	public ConfigUtil(final Plugin plugin) {
 		this.plugin = plugin;
 	}
 
@@ -39,7 +39,7 @@ public class ConfigurationUtil {
 				} else file.createNewFile();
 			}
 		} catch (final IOException e) {
-			plugin.getLogger().severe(("Unable to create configuration file!"));
+			plugin.getLogger().severe("Unable to create configuration file!");
 		}
 	}
 }
