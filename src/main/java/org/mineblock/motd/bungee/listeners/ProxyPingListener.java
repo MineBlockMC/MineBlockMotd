@@ -1,12 +1,17 @@
 package org.mineblock.motd.bungee.listeners;
 
+import net.md_5.bungee.api.Callback;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import net.md_5.bungee.protocol.ProtocolConstants;
+import org.mineblock.motd.bungee.BungeePlugin;
 import org.mineblock.motd.bungee.variables.Variables;
 
 import java.util.UUID;
@@ -27,6 +32,7 @@ public class ProxyPingListener implements Listener {
 		}
 
 		response.getModinfo().setType("VANILLA");
+		response.getVersion().setProtocol(Math.max(event.getConnection().getVersion(), ProtocolConstants.MINECRAFT_1_9));
 
 		final ServerPing.Players players = response.getPlayers();
 		int onlinePlayers = players.getOnline();
