@@ -1,41 +1,45 @@
 package org.mineblock.motd.bukkit;
 
-import org.bukkit.Server;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import org.mineblock.motd.bukkit.handler.CommandHandler;
 import org.mineblock.motd.bukkit.listeners.ServerInfoListener;
 import org.mineblock.motd.bukkit.listeners.ServerListPingListener;
-import org.mineblock.motd.bukkit.utils.ConfigurationUtil;
-import org.mineblock.motd.bukkit.variables.Messages;
-import org.mineblock.motd.bukkit.variables.Variables;
 
 import java.io.File;
 
 public class BukkitPlugin extends JavaPlugin {
-	public static BukkitPlugin INSTANCE;
+	private YamlConfiguration message;
+
+	@Override
+	public void onLoad() {
+		saveDefaultConfig();
+		reloadMessage();
+	}
 
 	@Override
 	public void onEnable() {
-		INSTANCE = this;
+		getCommand("motd").setExecutor(new CommandHandler(this));
 
-		final ConfigurationUtil configurationUtil = new ConfigurationUtil(this);
-
-		configurationUtil.createConfiguration(new File(getDataFolder(), "config.yml"));
-		configurationUtil.createConfiguration(new File(getDataFolder(), "messages.yml"));
-
-		final Server server = getServer();
-		final Variables variables = new Variables(configurationUtil);
-		final Messages messages = new Messages(configurationUtil);
-		final PluginManager pluginManager = server.getPluginManager();
-
-		getCommand("motd").setExecutor(new CommandHandler(variables, messages, this));
-
-		if (pluginManager.isPluginEnabled("ProtocolLib")) {
-			new ServerInfoListener(this, variables).register();
+		if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+			new ServerInfoListener(this).register();
 		} else {
-			pluginManager.registerEvents(new ServerListPingListener(variables), this);
+			getServer().getPluginManager().registerEvents(new ServerListPingListener(this), this);
 		}
+	}
+
+	public YamlConfiguration getMessage(){
+		return message;
+	}
+
+	@Override
+	public void reloadConfig() {
+		super.reloadConfig();
+		reloadMessage();
+	}
+
+	public void reloadMessage(){
+		saveResource("message.yml", false);
+		message = YamlConfiguration.loadConfiguration(new File(getDataFolder(),"message.yml"));
 	}
 }

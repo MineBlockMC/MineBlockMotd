@@ -1,35 +1,76 @@
 package org.mineblock.motd.bungee;
 
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.api.plugin.PluginManager;
-
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 import org.mineblock.motd.bungee.handler.CommandHandler;
 import org.mineblock.motd.bungee.listeners.ProxyPingListener;
-import org.mineblock.motd.bungee.utils.ConfigUtil;
-import org.mineblock.motd.bungee.variables.Messages;
-import org.mineblock.motd.bungee.variables.Variables;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 public class BungeePlugin extends Plugin {
-	public static BungeePlugin INSTANCE;
+	private Configuration config;
+	private Configuration message;
+
+	@Override
+	public void onLoad() {
+		saveDefaultConfig();
+		reloadConfig();
+		reloadMessage();
+	}
 
 	@Override
 	public void onEnable() {
-		INSTANCE = this;
+		getProxy().getPluginManager().registerListener(this, new ProxyPingListener(this));
+		getProxy().getPluginManager().registerCommand(this, new CommandHandler("motd", "mineblock.command.motd", this));
+	}
 
-		final ConfigUtil configUtil = new ConfigUtil(this);
+	private void saveResource(String fileName) {
+		if (!getDataFolder().exists()) {
+			getDataFolder().mkdir();
+		}
 
-		configUtil.createConfiguration(new File(getDataFolder(), "config.yml"));
-		configUtil.createConfiguration(new File(getDataFolder(), "messages.yml"));
+		File file = new File(getDataFolder(), fileName);
 
-		final ProxyServer proxy = getProxy();
-		final Variables variables = new Variables(configUtil);
-		final Messages messages = new Messages(configUtil);
-		final PluginManager pluginManager = proxy.getPluginManager();
+		if (!file.exists()) {
+			try (InputStream in = getResourceAsStream(fileName)) {
+				Files.copy(in, file.toPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-		pluginManager.registerListener(this, new ProxyPingListener(variables));
-		pluginManager.registerCommand(this, new CommandHandler("motd", "mineblock.command.motd", variables, messages, this));
+	public void saveDefaultConfig() {
+		saveResource("config.yml");
+	}
+
+	public void reloadConfig() {
+		try {
+			config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
+		} catch (IOException ex) {
+			getLogger().severe("Failed to save config file!");
+		}
+	}
+
+	public void reloadMessage()  {
+		saveResource("messages.yml");
+		try {
+			message = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "messages.yml"));
+		} catch (IOException ex) {
+			getLogger().severe("Failed to save message file!");
+		}
+	}
+
+	public Configuration getMessage(){
+		return message;
+	}
+
+	public Configuration getConfig(){
+		return config;
 	}
 }

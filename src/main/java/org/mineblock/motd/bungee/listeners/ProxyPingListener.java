@@ -1,73 +1,63 @@
 package org.mineblock.motd.bungee.listeners;
 
-import net.md_5.bungee.api.Callback;
-import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ProxyPingEvent;
-import net.md_5.bungee.api.plugin.Cancellable;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-
-import net.md_5.bungee.protocol.ProtocolConstants;
 import org.mineblock.motd.bungee.BungeePlugin;
-import org.mineblock.motd.bungee.variables.Variables;
 
+import java.util.List;
 import java.util.UUID;
 
 public class ProxyPingListener implements Listener {
-	private final Variables variables;
+	private final BungeePlugin plugin;
 
-	public ProxyPingListener(final Variables variables) {
-		this.variables = variables;
+	public ProxyPingListener(final BungeePlugin plugin) {
+		this.plugin = plugin;
 	}
 
 	@EventHandler(priority = 64)
 	public void onProxyPing(final ProxyPingEvent event) {
 		final ServerPing response = event.getResponse();
 
-		if (response == null || (event instanceof Cancellable && ((Cancellable) event).isCancelled())) {
+		if (response == null) {
 			return;
 		}
 
 		response.getModinfo().setType("VANILLA");
-		response.getVersion().setProtocol(Math.max(event.getConnection().getVersion(), ProtocolConstants.MINECRAFT_1_9));
+		response.getVersion().setProtocol(Math.max(event.getConnection().getVersion(), plugin.getConfig().getInt("version.minimum",1)));
 
 		final ServerPing.Players players = response.getPlayers();
-		int onlinePlayers = players.getOnline();
-		int maxPlayers = players.getMax();
 
-		if (variables.isFakePlayersEnabled()) {
-			onlinePlayers = onlinePlayers + variables.getFakePlayersAmount(onlinePlayers);
-
-			players.setOnline(onlinePlayers);
+		if (plugin.getConfig().getBoolean("motd.enable")) {
+			response.setDescriptionComponent(new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("motd.list"))));
 		}
 
-		if (variables.isMaxPlayersEnabled()) {
-			maxPlayers = variables.isMaxPlayersJustOneMore() ? (onlinePlayers + 1) : variables.getMaxPlayers();
-
-			players.setMax(maxPlayers);
+		if (plugin.getConfig().getBoolean("protocol.enable")) {
+			response.getVersion().setName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("protocol.name","MineBlock")));
 		}
 
-		if (variables.isMotdEnabled()) {
-			response.setDescriptionComponent(new TextComponent(variables.getMOTD(maxPlayers, onlinePlayers)));
-		}
-
-		if (variables.isProtocolEnabled()) {
-			response.getVersion().setName(variables.getProtocolName());
-		}
-
-		if (variables.isSampleEnabled()) {
+		if (plugin.getConfig().getBoolean("sample.enable")) {
 			final UUID fakeUuid = new UUID(0, 0);
-			final String[] sampleString = variables.getSample(maxPlayers, onlinePlayers);
-			final ServerPing.PlayerInfo[] sample = new ServerPing.PlayerInfo[sampleString.length];
+			List<String> sampleList = plugin.getConfig().getStringList("sample.list");
+			final ServerPing.PlayerInfo[] sample = new ServerPing.PlayerInfo[sampleList.size()];
 
-			for (int i = 0; i < sampleString.length; i++) {
-				sample[i] = new ServerPing.PlayerInfo(sampleString[i], fakeUuid);
+			for (int i = 0; i < sampleList.size(); i++) {
+				sample[i] = new ServerPing.PlayerInfo(ChatColor.translateAlternateColorCodes('&',
+						sampleList.get(i).replace("%maxplayers%", String.valueOf(players.getMax())).replace("%onlineplayers%", String.valueOf(players.getOnline()))),
+						fakeUuid
+				);
 			}
 
 			players.setSample(sample);
+		}
+
+		if(plugin.getConfig().getBoolean("maintenance.enable")){
+			response.getVersion().setName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("maintenance.protocol","&c维护模式")));
+			players.setSample(new ServerPing.PlayerInfo[]{new ServerPing.PlayerInfo(ChatColor.translateAlternateColorCodes('&',ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("maintenance.sample","&c服务器正在进行维护！"))), new UUID(0, 0))});
+			response.getVersion().setProtocol(plugin.getConfig().getInt("maintenance.version",0));
 		}
 
 		event.setResponse(response);

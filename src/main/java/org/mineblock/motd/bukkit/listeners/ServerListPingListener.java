@@ -4,32 +4,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
-
-import org.mineblock.motd.bukkit.variables.Variables;
+import org.mineblock.motd.bukkit.BukkitPlugin;
 
 public class ServerListPingListener implements Listener {
-	private final Variables variables;
+	private final BukkitPlugin plugin;
 
-	public ServerListPingListener(final Variables variables) {
-		this.variables = variables;
+	public ServerListPingListener(BukkitPlugin plugin) {
+		this.plugin = plugin;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onServerListPing(final ServerListPingEvent event) {
-		// There is no way to get player name on Bukkit
-		// There is no way to set player count on Bukkit
-
-		final int onlinePlayers = event.getNumPlayers();
-		int maxPlayers = event.getMaxPlayers();
-
-		if (variables.isMaxPlayersEnabled()) {
-			maxPlayers = variables.isMaxPlayersJustOneMore() ? onlinePlayers + 1 : variables.getMaxPlayers();
-
-			event.setMaxPlayers(maxPlayers);
-		}
-
-		if (variables.isMotdEnabled()) {
-			event.setMotd(variables.getMOTD(maxPlayers, onlinePlayers));
+		if (plugin.getConfig().getBoolean("motd.enable")) {
+			event.setMotd(plugin.getConfig().getString("motd.list"));
 		}
 	}
 }

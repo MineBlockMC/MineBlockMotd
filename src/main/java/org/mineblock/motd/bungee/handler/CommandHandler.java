@@ -1,45 +1,38 @@
 package org.mineblock.motd.bungee.handler;
 
-import org.mineblock.motd.bungee.BungeePlugin;
-import org.mineblock.motd.bungee.variables.Messages;
-import org.mineblock.motd.bungee.variables.Variables;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
+import org.mineblock.motd.bungee.BungeePlugin;
 
 public class CommandHandler extends Command {
-	private final Variables variables;
-	private final Messages messages;
 	private final BungeePlugin plugin;
 
-	public CommandHandler(final String string, String permission, final Variables variables, final Messages messages, BungeePlugin plugin) {
+	public CommandHandler(final String string, String permission, BungeePlugin plugin) {
 		super(string, permission);
-		this.variables = variables;
-		this.messages = messages;
 		this.plugin = plugin;
 	}
 
 	public void execute(final CommandSender commandSender, final String[] args) {
-		switch (args[0].toLowerCase()){
-			case "help":{
-				if (commandSender.hasPermission("mineblock.command.motd")) {
-					commandSender.sendMessage(new TextComponent(Messages.USAGE));
-				} else commandSender.sendMessage(new TextComponent(Messages.NOPERMISSION));
-				break;
+		if (commandSender.hasPermission("mineblock.command.motd")) {
+			switch (args[0].toLowerCase()) {
+				case "help": {
+					commandSender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', plugin.getMessage().getString("messages.usage"))));
+					break;
+				}
+				case "reload": {
+					plugin.reloadConfig();
+					plugin.reloadMessage();
+					commandSender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&',plugin.getMessage().getString("messages.reload"))));
+					break;
+				}
+				default: {
+					commandSender.sendMessage(new TextComponent("This server is running " + plugin.getDescription().getName() + " version " + plugin.getDescription().getVersion() + " by " + plugin.getDescription().getAuthor()));
+					commandSender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&',plugin.getMessage().getString("messages.unknown-command"))));
+					break;
+				}
 			}
-			case "reload":{
-				if (commandSender.hasPermission("mineblock.command.motd")) {
-					variables.reloadConfig();
-					messages.reload();
-					commandSender.sendMessage(new TextComponent(Messages.RELOAD));
-				} else commandSender.sendMessage(new TextComponent(Messages.NOPERMISSION));
-				break;
-			}
-			default:{
-				commandSender.sendMessage(new TextComponent("This server is running "+ plugin.getDescription().getName() +" version "+ plugin.getDescription().getVersion()+" by "+ plugin.getDescription().getAuthor()));
-				commandSender.sendMessage(new TextComponent(Messages.UNKNOWNCOMMAND));
-				break;
-			}
-		}
+		} else commandSender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&',plugin.getMessage().getString("messages.no-permission"))));
 	}
 }
