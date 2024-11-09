@@ -1,24 +1,26 @@
-motd:
-  enable: true
-  list: |-
-    &r        &6&lMine&f&lBlock&r &a纯净生存服务器 &c[1.17.1]
-    &r        &a&l高版本生存社区服务器&r &7| &6&l欢迎新玩家！
-
-sample:
-  enable: false
-  # Placeholders: %onlineplayers% %maxplayers%
-  list:
-    - "在线: %onlineplayers%/%maxplayers%"
-
-protocol:
-  enable: false
-  name: "MineBlock"
-
-version:
-  minimum: 47
-
-maintenance:
-  enable: false
-  protocol: "&c维护模式"
-  sample: "&c服务器正在进行维护！"
-  version: 1
+{
+  "motd": {
+    "enable": true,
+    "lines": [
+      "&6&lMine&f&lBlock&r &a纯净生存服务器 &c[1.17.1]",
+      "&a&l高版本生存社区服务器&r &7| &6&l欢迎新玩家！"
+    ]
+  },
+  "sample": {
+    "enable": false,
+    "list": [
+      "在线: %onlineplayers%/%maxplayers%"
+    ]
+  },
+  "protocol": {
+    "enable": false,
+    "name": "MineBlock",
+    "minimum": 47
+  },
+  "maintenance": {
+    "enable": false,
+    "protocol": "&c维护模式",
+    "sample": "&c服务器正在进行维护！",
+    "version": 1
+  }
+}
